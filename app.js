@@ -4,20 +4,22 @@
 // 1. Initialize Firebase
 // 2. Create button for adding new trains - then update the html + update the database
 // 3. Create a way to retrieve trains from the train database.
-// 4. Create a way to calculate the months worked. Using difference between start and current time.
-//    Then use moment.js formatting to set difference in months.
+// 4. Create a way to calculate the minutes passed. Using difference between start and current time.
+//    Then use moment.js formatting to set difference in minutes.
 // 5. Calculate Total billed
 
 // 1. Initialize Firebase
-var config = {
-    apiKey: "AIzaSyA_QypGPkcjPtylRDscf7-HQl8ribnFeIs",
-    authDomain: "time-sheet-55009.firebaseapp.com",
-    databaseURL: "https://time-sheet-55009.firebaseio.com",
-    storageBucket: "time-sheet-55009.appspot.com"
+  var config = {
+    apiKey: "AIzaSyAkv8Cxo9gWDugOqa-x5mTq-tkFyPYJLCw",
+    authDomain: "trainschedul3.firebaseapp.com",
+    databaseURL: "https://trainschedul3.firebaseio.com",
+    projectId: "trainschedul3",
+    storageBucket: "trainschedul3.appspot.com",
+    messagingSenderId: "96424126768"
   };
-  
   firebase.initializeApp(config);
-  
+
+    
   var database = firebase.database();
   
   // 2. Button for adding trains
@@ -26,16 +28,16 @@ var config = {
   
     // Grabs user input
     var trainName = $("#train-name-input").val().trim();
-    var trainRole = $("#role-input").val().trim();
-    var trainStart = moment($("#start-input").val().trim(), "MM/DD/YYYY").format("X");
+    var trainDestination = $("#destination-input").val().trim();
+    var trainStart = moment($("#start-input").val().trim(), "HH:mm").format("HH:mm");
     var trainRate = $("#rate-input").val().trim();
   
     // Creates local "temporary" object for holding train data
     var newTrain = {  //
       name: trainName,
-      role: trainRole,
+      destination: trainDestination,
       start: trainStart,
-      rate: trainRate
+      tFrequency: trainRate
     };
   
     // Uploads train data to the database
@@ -43,15 +45,15 @@ var config = {
   
     // Logs everything to console
     console.log(newTrain.name); ///
-    console.log(newTrain.role);
+    console.log(newTrain.destination);
     console.log(newTrain.start);
-    console.log(newTrain.rate);
+    console.log(newTrain.tFrequency);
   
     alert("train successfully added");
   
     // Clears all of the text-boxes
     $("#train-name-input").val("");
-    $("#role-input").val("");
+    $("#destination-input").val("");
     $("#start-input").val("");
     $("#rate-input").val("");
   });
@@ -62,36 +64,32 @@ var config = {
   
     // Store everything into a variable.
     var trainName = childSnapshot.val().name;
-    var trainRole = childSnapshot.val().role;
+    var trainDestination = childSnapshot.val().destination;
     var trainStart = childSnapshot.val().start;
-    var trainRate = childSnapshot.val().rate;
+    var trainRate = childSnapshot.val().tFrequency;
   
     // train Info
     console.log(trainName);
-    console.log(trainRole);
+    console.log(trainDestination);
     console.log(trainStart);
     console.log(trainRate);
   
     // Prettify the train start
-    var trainStartPretty = moment.unix(trainStart).format("MM/DD/YYYY");
+    var trainStartPretty = moment.unix(trainStart).format("HH:mm");
   
-    // Calculate the months worked using hardcore math
-    // To calculate the months worked
-    var trainMonths = moment().diff(moment(trainStart, "X"), "months");
-    console.log(trainMonths);
+    // Calculate the minutes passed using hardcore math
+    // To calculate the minutes passed
+    var trainMinutes = moment().diff(moment(trainStart, "HH:mm"), "minutes");
+    console.log(trainMinutes);
   
-    // Calculate the total billed rate
-    var trainBilled = trainMonths * trainRate;
-    console.log(trainBilled);
   
     // Create the new row
     var newRow = $("<tr>").append(
       $("<td>").text(trainName),
-      $("<td>").text(trainRole),
+      $("<td>").text(trainDestination),
       $("<td>").text(trainStartPretty),
-      $("<td>").text(trainMonths),
+      $("<td>").text(trainMinutes),
       $("<td>").text(trainRate),
-      $("<td>").text(trainBilled)
     );
   
     // Append the new row to the table
@@ -103,7 +101,7 @@ var config = {
   // Assume train start date of January 1, 2015
   // Assume current date is March 1, 2016
   
-  // We know that this is 15 months.
+  // We know that this is 15 minutes.
   // Now we will create code in moment.js to confirm that any attempt we use meets this test case
 
   
