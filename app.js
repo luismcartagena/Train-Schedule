@@ -1,12 +1,7 @@
-// timesheet logic
-// Steps to complete:
 
-// 1. Initialize Firebase
-// 2. Create button for adding new trains - then update the html + update the database
-// 3. Create a way to retrieve trains from the train database.
-// 4. Create a way to calculate the minutes passed. Using difference between start and current time.
-//    Then use moment.js formatting to set difference in minutes.
-// 5. Calculate Total billed
+// Launch
+$(document).ready(function() {
+    
 
 // 1. Initialize Firebase
 var config = {
@@ -36,8 +31,8 @@ $("#add-train-btn").on("click", function(event) {
     $("#start-input")
       .val()
       .trim(),
-    "HH:mm"
-  ).format("HH:mm");
+    "hh:mm a"
+  ).format("hh:mm a");
   var trainFrequency = $("#rate-input")
     .val()
     .trim();
@@ -89,19 +84,19 @@ database.ref().on("child_added", function(childSnapshot) {
   var currentTime = moment().format("hh:mm a");
   console.log(currentTime);
 
-  var firstTime = moment(firstTrain, "hh:mm a").subtract(1, "years");
+  var firstTime = moment(trainStart, "hh:mm a").subtract(1, "years");
   console.log("firstTime:" + firstTime);
 
   //Grab the difference from the current time and the first train arrival
   var trainDifference = moment().diff(moment(firstTime), "minutes");
   console.log("trainDifference:" + trainDifference);
 
-  //Use modulo to grab the remainder of the trainDifference and trainFreq
-  var timeLeft = trainDifference % trainFreq;
+  //Use modulo to grab the remainder of the trainDifference and trainFrequency
+  var timeLeft = trainDifference % trainFrequency;
   console.log("timeLeft:" + timeLeft);
 
   //Grab the minutes away but subtracting the train frequency from the time left
-  var minutesAway = trainFreq - timeLeft;
+  var minutesAway = trainFrequency - timeLeft;
   console.log("minutesAway:" + minutesAway);
 
   //Grab the next train coming
@@ -114,7 +109,7 @@ database.ref().on("child_added", function(childSnapshot) {
   var newRow = $("<tr>").append(
     $("<td>").text(trainName),
     $("<td>").text(trainDestination),
-    $("<td>").text(trainMinutes),
+    $("<td>").text(trainFrequency),
     $("<td>").text(nextTrain),
     $("<td>").text(minutesAway)
   );
@@ -192,3 +187,4 @@ console.log("MINUTES TILL TRAIN: " + tMinutesTillTrain);
 // Next Train
 var nextTrain = moment().add(tMinutesTillTrain, "minutes");
 console.log("ARRIVAL TIME: " + moment(nextTrain).format("hh:mm"));
+})
